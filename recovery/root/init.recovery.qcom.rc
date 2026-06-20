@@ -29,6 +29,8 @@ on init
     # to cut charging battery path
     write /sys/class/power_supply/battery/siop_level 0
     setprop sys.usb.configfs 1
+    setprop persist.sys.usb.config adb
+    setprop sys.usb.config adb
 
 on fs
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
@@ -39,10 +41,14 @@ on fs
     mount vfat /dev/block/bootdevice/by-name/apnhlos /vendor/firmware_mnt
 
     export ANDROID_ROOT /system_root
+    start keymint-default
+    start keymaster-sb-4-0
     # Mount bootdevice
 
 on boot
-    start vendor.health-recovery
+    start logd
+    start adbd
+    start health-hal-2-1
 
 on property:crypto.ready=1
     start keymint-default

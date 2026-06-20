@@ -8,6 +8,8 @@ on property:ro.crypto.type=block && property:ro.crypto.fs_crypto_blkdev=*
     stop keymint-default
 
 service keymint-default /system/bin/android.hardware.security.keymint-service
+    interface aidl android.hardware.security.keymint.IKeyMintDevice/default
+    interface aidl android.hardware.security.keymint.IRemotelyProvisionedComponent/default
     user root
     group root
     setenv LD_LIBRARY_PATH /vendor/lib64:/vendor/lib:/system/lib64:/system/lib:/sbin
