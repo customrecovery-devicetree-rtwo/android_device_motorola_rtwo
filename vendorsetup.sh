@@ -4,10 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-add_lunch_combo twrp_rtwo-eng
-add_lunch_combo omni_rtwo-eng
-add_lunch_combo orangefox_rtwo-eng
-
 export ALLOW_MISSING_DEPENDENCIES=true
 export FOX_BUILD_DEVICE=rtwo
 export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1

@@ -25,26 +25,39 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import /init.recovery.qcom_decrypt.rc
+
 on init
     # to cut charging battery path
     write /sys/class/power_supply/battery/siop_level 0
     setprop sys.usb.configfs 1
     setprop persist.sys.usb.config adb
     setprop sys.usb.config adb
+    setprop prepdecrypt.setpatch true
+    setprop prepdecrypt.loglevel 2
 
 on fs
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
 
     # Mount firmware
-    wait /dev/block/bootdevice/by-name/apnhlos
-    mkdir /vendor/firmware_mnt 0755 root root
+    mkdir /vendor/firmware_mnt
     mount vfat /dev/block/bootdevice/by-name/apnhlos /vendor/firmware_mnt
+    chmod 0660 /dev/qseecom
+    chown system drmrpc /dev/qseecom
+    chmod 0660 /dev/smcinvoke
+    chown system drmrpc /dev/smcinvoke
+    chmod 0660 /dev/qsee_ipc_irq_spss
+    chown system drmrpc /dev/qsee_ipc_irq_spss
+    chmod 0660 /dev/sp_keymaster
+    chown system system /dev/sp_keymaster
+    chmod 0660 /dev/sp_keymaster_ssr
+    chown system system /dev/sp_keymaster_ssr
+    chmod 0660 /dev/spss_utils
+    chown system system /dev/spss_utils
 
     export ANDROID_ROOT /system_root
     start qseecomd
-    start gatekeeper-1-0
-    start keymint-default
     # Mount bootdevice
 
 on boot
@@ -52,15 +65,10 @@ on boot
     start adbd
     start health-hal-2-1
 
-on property:crypto.ready=1
-    start qseecomd
+on property:vendor.sys.listeners.registered=true
     start gatekeeper-1-0
-    start keymint-default
-
-on property:crypto.ready=0
     stop keymint-default
-    stop gatekeeper-1-0
-    stop qseecomd
+    start keymint-qti
 
 on property:twrp.user.0.decrypt=0
     umount /vendor/firmware_mnt
@@ -68,10 +76,3 @@ on property:twrp.user.0.decrypt=0
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
     write /sys/class/udc/${ro.boot.usbcontroller}/device/../mode peripheral
-
-service qseecomd /system/bin/qseecomd
-    user root
-    group root system
-    setenv LD_LIBRARY_PATH /vendor/lib64:/vendor/lib:/system/lib64:/system/lib:/sbin
-    disabled
-    seclabel u:r:recovery:s0

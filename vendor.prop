@@ -7,3 +7,4 @@ ro.crypto.volume.options=aes-256-xts:aes-256-cts:v2
 ro.security.keystore.keytype=sakv2,gak,sgak,rkp
 ro.hardware.keystore=mdfpp
 ro.hardware.gatekeeper=mdfpp
+vendor.gatekeeper.disable_spu=true
