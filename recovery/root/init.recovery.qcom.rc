@@ -68,6 +68,9 @@ on boot
 on property:vendor.sys.listeners.registered=true
     start gatekeeper-1-0
     stop keymint-default
+
+on property:crypto.ready=1 && property:hwservicemanager.ready=true && property:vendor.sys.listeners.registered=true
+    stop keymint-default
     start keymint-qti
 
 on property:twrp.user.0.decrypt=0
