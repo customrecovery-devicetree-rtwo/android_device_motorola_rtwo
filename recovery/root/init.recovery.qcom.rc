@@ -37,7 +37,8 @@ on fs
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
 
     # Mount firmware
-    mkdir /vendor/firmware_mnt
+    wait /dev/block/bootdevice/by-name/apnhlos
+    mkdir /vendor/firmware_mnt 0755 root root
     mount vfat /dev/block/bootdevice/by-name/apnhlos /vendor/firmware_mnt
 
     export ANDROID_ROOT /system_root
@@ -64,3 +65,10 @@ on property:twrp.user.0.decrypt=0
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
     write /sys/class/udc/${ro.boot.usbcontroller}/device/../mode peripheral
+
+service qseecomd /system/bin/qseecomd
+    user root
+    group root system
+    setenv LD_LIBRARY_PATH /vendor/lib64:/vendor/lib:/system/lib64:/system/lib:/sbin
+    disabled
+    seclabel u:r:recovery:s0
