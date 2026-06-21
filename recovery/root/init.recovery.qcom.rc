@@ -43,6 +43,7 @@ on fs
 
     export ANDROID_ROOT /system_root
     start qseecomd
+    start gatekeeper-1-0
     start keymint-default
     # Mount bootdevice
 
@@ -53,10 +54,12 @@ on boot
 
 on property:crypto.ready=1
     start qseecomd
+    start gatekeeper-1-0
     start keymint-default
 
 on property:crypto.ready=0
     stop keymint-default
+    stop gatekeeper-1-0
     stop qseecomd
 
 on property:twrp.user.0.decrypt=0
